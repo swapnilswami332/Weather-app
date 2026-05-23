@@ -1,0 +1,216 @@
+/* Atmospheric effects — integrated with theme system, behind UI content */
+
+.atmos-effects {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+#atmos-particles {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.85;
+}
+
+.effect-layer {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+  pointer-events: none;
+}
+
+/* ── Cold: color grading on atmosphere only ── */
+.atmos-effects[data-cold-grade] .effect-cold-grade {
+  opacity: 1;
+  background: linear-gradient(
+    180deg,
+    rgba(186, 230, 253, 0.08) 0%,
+    rgba(14, 116, 144, 0.06) 45%,
+    rgba(8, 47, 73, 0.12) 100%
+  );
+  mix-blend-mode: screen;
+}
+
+html[data-temp-band="cold"] .bg-overlay {
+  filter: saturate(0.92) hue-rotate(-8deg);
+}
+
+/* Frost vignette on edges */
+.atmos-effects[data-frost-edge] .effect-frost-edge {
+  opacity: 1;
+  box-shadow:
+    inset 0 0 80px rgba(224, 242, 254, 0.12),
+    inset 0 0 140px rgba(125, 211, 252, 0.08);
+  backdrop-filter: blur(0.5px);
+  -webkit-backdrop-filter: blur(0.5px);
+  mask-image: radial-gradient(ellipse 85% 75% at 50% 45%, transparent 55%, black 100%);
+  -webkit-mask-image: radial-gradient(ellipse 85% 75% at 50% 45%, transparent 55%, black 100%);
+}
+
+/* Breathing fog at bottom */
+.atmos-effects[data-fog-breathe] .effect-fog-breathe {
+  opacity: 1;
+  background: linear-gradient(0deg, rgba(226, 232, 240, 0.14) 0%, transparent 42%);
+  animation: fogBreathe 9s ease-in-out infinite;
+}
+
+@keyframes fogBreathe {
+  0%, 100% { opacity: 0.35; transform: translateY(0); }
+  50% { opacity: 0.55; transform: translateY(-6px); }
+}
+
+/* ── Hot: warm grading + shimmer on background only ── */
+.atmos-effects[data-hot-grade] .effect-hot-grade {
+  opacity: 1;
+  background: linear-gradient(
+    165deg,
+    rgba(251, 146, 60, 0.1) 0%,
+    rgba(234, 88, 12, 0.06) 40%,
+    rgba(120, 53, 15, 0.08) 100%
+  );
+  mix-blend-mode: soft-light;
+}
+
+html[data-temp-band="hot"] .bg-overlay {
+  filter: saturate(0.88) sepia(0.12);
+}
+
+/* Heat shimmer — background layers only, never UI text */
+
+html[data-temp-band="hot"] .bg-layer-a,
+html[data-temp-band="hot"] .bg-layer-b {
+  animation: heatShimmer 7s ease-in-out infinite;
+  transform-origin: center center;
+  transition: filter 0.8s ease;
+}
+
+@keyframes heatShimmer {
+  0%, 100% { filter: blur(0px) saturate(1); transform: scale(1); }
+  50% { filter: blur(0.4px) saturate(1.05); transform: scale(1.008); }
+}
+
+.atmos-effects[data-heat-gloss] .effect-heat-gloss {
+  opacity: 1;
+  background: linear-gradient(
+    115deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.04) 45%,
+    rgba(255, 255, 255, 0.07) 50%,
+    rgba(255, 255, 255, 0.03) 55%,
+    transparent 70%
+  );
+  background-size: 200% 200%;
+  animation: heatGloss 12s ease-in-out infinite;
+}
+
+@keyframes heatGloss {
+  0%, 100% { background-position: 0% 50%; opacity: 0.35; }
+  50% { background-position: 100% 50%; opacity: 0.5; }
+}
+
+/* ── Rain: glass reflection streaks ── */
+.atmos-effects[data-rain-glass] .effect-rain-glass {
+  opacity: 1;
+  background: repeating-linear-gradient(
+    105deg,
+    transparent 0px,
+    transparent 18px,
+    rgba(255, 255, 255, 0.025) 18px,
+    rgba(255, 255, 255, 0.04) 19px,
+    transparent 20px
+  );
+  animation: rainGlassShift 14s linear infinite;
+}
+
+@keyframes rainGlassShift {
+  from { background-position: 0 0; }
+  to { background-position: 120px 240px; }
+}
+
+.atmos-effects[data-rain] .effect-rain-veil {
+  opacity: 1;
+  background: linear-gradient(180deg, rgba(30, 58, 95, 0.08) 0%, rgba(15, 23, 42, 0.05) 100%);
+}
+
+/* ── Fog: layered depth haze ── */
+.atmos-effects[data-fog-haze] .effect-fog-haze {
+  opacity: 1;
+}
+
+.atmos-effects[data-fog-haze] .effect-fog-haze::before,
+.atmos-effects[data-fog-haze] .effect-fog-haze::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.atmos-effects[data-fog-haze] .effect-fog-haze::before {
+  background: radial-gradient(ellipse 120% 60% at 50% 80%, rgba(203, 213, 225, 0.18), transparent 70%);
+  animation: fogDriftA 16s ease-in-out infinite;
+}
+
+.atmos-effects[data-fog-haze] .effect-fog-haze::after {
+  background: radial-gradient(ellipse 90% 50% at 30% 60%, rgba(148, 163, 184, 0.12), transparent 65%);
+  animation: fogDriftB 22s ease-in-out infinite reverse;
+}
+
+@keyframes fogDriftA {
+  0%, 100% { transform: translateX(0); opacity: 0.5; }
+  50% { transform: translateX(20px); opacity: 0.75; }
+}
+
+@keyframes fogDriftB {
+  0%, 100% { transform: translateX(0); opacity: 0.4; }
+  50% { transform: translateX(-16px); opacity: 0.65; }
+}
+
+/* ── Clear day: subtle sunlight ── */
+.atmos-effects[data-clear-glow] .effect-clear-glow {
+  opacity: 1;
+  background: radial-gradient(
+    ellipse 90% 55% at 50% -5%,
+    rgba(255, 237, 153, 0.14) 0%,
+    rgba(251, 191, 36, 0.06) 35%,
+    transparent 70%
+  );
+}
+
+/* ── Storm: rare subtle flash ── */
+.atmos-effects[data-storm-flash] .effect-storm-flash {
+  opacity: 0;
+  background: rgba(255, 255, 255, 0.06);
+  animation: stormFlash 11s ease-in-out infinite;
+}
+
+@keyframes stormFlash {
+  0%, 92%, 100% { opacity: 0; }
+  93% { opacity: 0.35; }
+  94% { opacity: 0.05; }
+  95% { opacity: 0.2; }
+  96% { opacity: 0; }
+}
+
+/* ── Snow grading ── */
+.atmos-effects[data-snow-grade] .effect-snow-grade {
+  opacity: 1;
+  background: linear-gradient(180deg, rgba(248, 250, 252, 0.1) 0%, transparent 50%);
+}
+
+/* Reduced motion: disable animations, keep static grades only */
+@media (prefers-reduced-motion: reduce) {
+  .effect-layer,
+  html[data-temp-band="hot"] .bg-layer-a,
+  html[data-temp-band="hot"] .bg-layer-b {
+    animation: none !important;
+  }
+
+  #atmos-particles {
+    display: none;
+  }
+}

@@ -1,0 +1,85 @@
+/* Per-city tab weather colors — inline styles from theme.js are primary; these are fallbacks */
+
+.location-tab-wrap {
+  border: 1px solid transparent;
+  transition: background 0.55s ease, border-color 0.55s ease, box-shadow 0.55s ease, color 0.55s ease;
+}
+
+.location-tab-wrap:not(.has-weather) {
+  background: var(--glass);
+}
+
+.location-tab-wrap.has-weather {
+  border-width: 1px;
+  border-style: solid;
+}
+
+.location-tab-wrap.has-weather .location-tab-delete {
+  background: rgba(0, 0, 0, 0.25);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: inherit;
+}
+
+.location-tab-wrap.has-weather .location-tab-delete:hover {
+  background: rgba(239, 68, 68, 0.65);
+  border-color: rgba(239, 68, 68, 0.8);
+  color: #fff;
+}
+
+.location-tab-wrap.active {
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5), 0 4px 18px rgba(0, 0, 0, 0.35);
+  transform: scale(1.02);
+}
+
+.location-tab-wrap.active.has-weather {
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.65), 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.location-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px 6px 10px;
+  border-radius: 999px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.tab-weather-icon {
+  font-size: 1.05rem;
+  line-height: 1;
+  flex-shrink: 0;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.25));
+}
+
+.tab-label {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  line-height: 1.1;
+}
+
+.tab-name {
+  font-size: 0.78rem;
+  font-weight: 600;
+  max-width: 76px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.tab-temp {
+  font-size: 0.68rem;
+  font-weight: 600;
+  opacity: 0.92;
+}
+
+.location-tab-wrap:not(.has-weather) .location-tab {
+  color: var(--text-secondary);
+}
+
+.location-tab-wrap.active:not(.has-weather) .location-tab {
+  color: var(--text-primary);
+}

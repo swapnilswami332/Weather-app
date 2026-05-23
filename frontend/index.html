@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en" data-weather="clear" data-time="day" data-background="clear-day">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Atmos — Weather</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/variables.css?v=2" />
+  <link rel="stylesheet" href="/css/themes.css?v=2" />
+  <link rel="stylesheet" href="/css/layout.css?v=2" />
+  <link rel="stylesheet" href="/css/components.css?v=2" />
+  <link rel="stylesheet" href="/css/tab-themes.css?v=2" />
+  <link rel="stylesheet" href="/css/effects.css?v=2" />
+</head>
+<body>
+  <div class="bg-layer bg-layer-a" aria-hidden="true"></div>
+  <div class="bg-layer bg-layer-b" aria-hidden="true"></div>
+  <div class="bg-overlay" aria-hidden="true"></div>
+
+  <div id="atmos-effects" class="atmos-effects" aria-hidden="true">
+    <canvas id="atmos-particles"></canvas>
+    <div class="effect-layer effect-cold-grade"></div>
+    <div class="effect-layer effect-frost-edge"></div>
+    <div class="effect-layer effect-fog-breathe"></div>
+    <div class="effect-layer effect-hot-grade"></div>
+    <div class="effect-layer effect-heat-gloss"></div>
+    <div class="effect-layer effect-rain-veil"></div>
+    <div class="effect-layer effect-rain-glass"></div>
+    <div class="effect-layer effect-fog-haze"></div>
+    <div class="effect-layer effect-clear-glow"></div>
+    <div class="effect-layer effect-storm-flash"></div>
+    <div class="effect-layer effect-snow-grade"></div>
+  </div>
+
+  <div id="offline-banner" class="offline-banner" hidden>You are offline. Showing last loaded data.</div>
+  <div id="error-banner" class="error-banner" hidden role="alert">
+    <span id="error-banner-text" class="error-banner-text"></span>
+    <button type="button" id="error-banner-dismiss" class="error-banner-dismiss" aria-label="Dismiss message">✕</button>
+  </div>
+
+  <div class="app">
+    <header class="topbar">
+      <div class="location-tabs-wrap">
+        <div class="location-tabs-scroller">
+          <div class="location-tabs" id="location-tabs" aria-label="Saved locations"></div>
+        </div>
+        <button type="button" id="add-location-btn" class="icon-btn icon-btn--compact" title="Add location" aria-label="Add location">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+      </div>
+      <div class="topbar-actions">
+        <button type="button" id="units-toggle" class="icon-btn" title="Toggle units">°C</button>
+        <button type="button" id="refresh-btn" class="icon-btn" title="Refresh weather" aria-label="Refresh">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 11-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
+        </button>
+        <button type="button" id="search-btn" class="icon-btn" title="Search city" aria-label="Search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3-3"/></svg>
+        </button>
+        <button type="button" id="geo-btn" class="icon-btn" title="Track live location" aria-label="Track live location" aria-pressed="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s6-5.33 6-10a6 6 0 10-12 0c0 4.67 6 10 6 10z"/><circle cx="12" cy="11" r="2.5"/></svg>
+          <span class="live-dot" id="geo-live-dot" hidden aria-hidden="true"></span>
+        </button>
+      </div>
+    </header>
+
+    <main class="main" id="main-content">
+      <section class="hero" id="hero">
+        <p class="location-name" id="location-name">—</p>
+        <p class="location-country" id="location-country"></p>
+        <div class="hero-temp-wrap">
+          <p class="hero-temp skeleton" id="hero-temp">—</p>
+          <p class="hero-feels" id="hero-feels">Feels like —</p>
+        </div>
+        <p class="condition-summary" id="condition-summary">—</p>
+        <p class="freshness-label" id="freshness-label">Updated — · Model forecast</p>
+      </section>
+
+      <section class="section periods-section" aria-label="Day periods">
+        <h2 class="section-title">Today</h2>
+        <div class="periods-grid" id="periods-grid"></div>
+      </section>
+
+      <section class="section hourly-section" aria-label="Hourly forecast">
+        <h2 class="section-title">Hourly</h2>
+        <div class="hourly-scroll" id="hourly-scroll"></div>
+      </section>
+
+      <section class="section daily-section" aria-label="Daily forecast">
+        <h2 class="section-title">10-Day Forecast</h2>
+        <div class="daily-list" id="daily-list"></div>
+      </section>
+
+      <section class="section details-section" aria-label="Weather details">
+        <h2 class="section-title">Details</h2>
+        <div class="details-grid" id="details-grid"></div>
+      </section>
+
+      <section class="section aqi-section" aria-label="Air quality">
+        <h2 class="section-title">Air Quality</h2>
+        <div class="aqi-card" id="aqi-card"></div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="search-dialog" class="search-dialog">
+    <form method="dialog" class="search-form" id="search-form">
+      <div class="search-header">
+        <h3 id="search-dialog-title">Search city</h3>
+        <button type="button" class="icon-btn" id="search-close" aria-label="Close">✕</button>
+      </div>
+      <p class="search-hint" id="search-hint">Find a city to view or add to your list.</p>
+      <input type="search" id="search-input" placeholder="City name…" autocomplete="off" />
+      <button type="button" class="search-live-btn" id="search-live-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s6-5.33 6-10a6 6 0 10-12 0c0 4.67 6 10 6 10z"/><circle cx="12" cy="11" r="2.5"/></svg>
+        Use live location
+      </button>
+      <div class="saved-locations-section" id="saved-locations-section">
+        <h4 class="saved-locations-title">Saved locations</h4>
+        <ul class="saved-locations-list" id="saved-locations-list"></ul>
+      </div>
+      <ul class="search-results" id="search-results"></ul>
+    </form>
+  </dialog>
+
+  <script type="module" src="/js/app.js?v=3"></script>
+</body>
+</html>
